@@ -11,6 +11,13 @@ import matplotlib.pyplot as plt
 #%%
 """
 @author: colbybailey
+Set value of b to True to print out plots as png files under ../../plots
+"""
+b = False
+
+#%%
+"""
+@author: colbybailey
 Read data into a dataframe using a list of header column names.
 """
 col_list = [ "Sensor Name", "Sensor Type", "Timestamp", "Temperature ( F )", "Humidity ( RH )",
@@ -90,8 +97,8 @@ plt.title( "Temperatures" )
 plt.ylabel( "°F", rotation = 0  )
 plt.xlabel( "# of inputs" )
 plt.legend( [ 'Temperature' ] )
-#plt.show( )
-plt.savefig('plots/temperatureAll.png')
+if( b == True ):
+    plt.savefig('plots/temperatureAll.png')
 plt.show( )
 
 #%%
@@ -153,8 +160,8 @@ plt.title( "Highest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
 plt.legend( [ 'Temperature' ] )
-#plt.show( )
-plt.savefig('plots/highestTemperatures.png')
+if( b == True ):
+    plt.savefig('plots/highestTemperatures.png')
 plt.show( )
 
 #%%
@@ -195,7 +202,8 @@ plt.xticks( datesParsed, rotation = 90 )
 plt.title( "Rain Accumulation ( Normalized values at 10 )" )
 plt.ylabel( "Inches" )
 plt.legend( [ 'Rain' ] )
-#plt.show( )
-plt.savefig('plots/rainAccumulation.png')
+if( b == True ):
+    plt.savefig('plots/rainAccumulation.png')
 plt.show( )
 
+#%%
