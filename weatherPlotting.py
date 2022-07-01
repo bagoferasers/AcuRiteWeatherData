@@ -26,7 +26,7 @@ col_list = [ "Sensor Name", "Sensor Type", "Timestamp", "Temperature ( F )", "Hu
              "Wind Average ( MPH )"	, "Wind Direction",	"Wired Sensor Temperature", "Wired Sensor Humidity", 
              "Soil & Liquid Temperature", "Water Detected", "UV Index", "Light Intensity", 
              "Measured Light", "Lightning Strike Count", "Lightning Closest Strike Distance" ]
-df = pd.read_csv( "wData.csv", usecols = col_list )
+df = pd.read_csv( "Data/June2022.csv", usecols = col_list )
 
 #%%
 """ 
@@ -105,8 +105,8 @@ plt.show( )
 """
 @author = colbybailey
 Find out how many days need to be checked for temperatures, loop through all dates and find 
-the highest temperatures per day, plot each highest temperature on a scatter plot. Merge sort
-highest temperatures to find the highest for current data set.
+the highest temperatures per day as well as the lowest, plot each highest & lowest temperature on a scatter plot. Merge sort
+highest & lowest temperatures to find the correct ones for current data set.
 """
 # declare and initialize variables
 tf = False
@@ -116,7 +116,9 @@ iVal = 0
 jVal = 0
 dates = [ ]
 highest = [ ]
+lowest = [ ]
 h = 0
+l = 200
 d = 0
 # count number of days and add them to datesParsed[]
 for i in df[ "Timestamp" ]:
@@ -134,28 +136,35 @@ for i in df[ "Timestamp" ]:
             count += 1
     tf = False
 final = [ dates, df[ "Temperature ( F )" ] ]
-#loop all dates and find highest temperatures
+#loop all dates and find highest and lowest temperatures
 for i in final[ 0 ]:
     # if i matches date d to check
     if i == datesParsed[ d ]:
-        #loop through all temperatures for each date to find highest
+        #loop through all temperatures for each date to find highest and lowest
         if final[ 1 ][ jVal ] > h:
             h = final[ 1 ][ jVal ]
+        if final[ 1 ][ jVal ] < l:
+            l = final[ 1 ][ jVal ]
     else:
         #increment date to check
         d += 1
-        #store highest value
+        #store highest and lowest value
         highest.append( h )
+        lowest.append( l )
         h = 0
+        l = 200
     jVal += 1
-# append last value to highest
+# append last value
 highest.append( h )
-# merge sort highest temps to find highest for set of data
+lowest.append( l )
+# merge sort highest temps to find highest and lowest for set of data
 high = mergeSort(highest)
+low = mergeSort(lowest)
 print( "Highest temperature for current data set = %.2f" % high[ len( high ) - 1 ] )
+print( "Lowest temperature for current data set = %.2f" % low[ 0 ] )
 # plot highest daily temperature data
 plt.scatter( datesParsed, highest, c = "red" ) 
-plt.plot( datesParsed, highest, c = "orange", alpha = 0.4 )
+plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
 plt.title( "Highest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
@@ -167,7 +176,22 @@ plt.show( )
 #%%
 '''
 @author = colbybailey
+Plotting lowest daily temperatures
+'''
+plt.scatter( datesParsed, lowest, c = "blue" )
+plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
+plt.title( "Lowest Daily Temperatures" )
+plt.ylabel( "°F", rotation = 0 )
+plt.xticks( datesParsed, rotation = 90 )
+plt.legend( [ 'Temperature' ] )
+if( b == True ):
+    plt.savefig('plots/lowestTemperatures.png')
+plt.show( )
+#%%
+'''
+@author = colbybailey
 Plotting rain for current data set per day accumulation.
+'''
 '''
 # declare and initialize variables
 rain = df[ "Accumulated Rain ( IN )" ]
@@ -179,7 +203,9 @@ finalRain = [ dates, "Accumulated Rain ( IN )" ]
 # loop through date stamps and add up rain per day and add to rainParsed[ ]
 for i in finalRain[ 0 ]:
     if i == datesParsed[ d ]:
-        rainCurrent += df[ "Accumulated Rain ( IN )" ][ iVal ]
+        if iVal > 1:
+            if df[ "Accumulated Rain ( IN )"][ iVal -1 ] != df[ "Accumulated Rain ( IN )" ][ iVal ]:
+                rainCurrent += df[ "Accumulated Rain ( IN )" ][ iVal ]
     else:
         rainParsed.append( rainCurrent )
         d += 1
@@ -205,5 +231,56 @@ plt.legend( [ 'Rain' ] )
 if( b == True ):
     plt.savefig('plots/rainAccumulation.png')
 plt.show( )
-
+'''
 #%%
+'''
+@author = colbybailey
+avg wind speed vs highest wind speeds for days
+'''
+windSpeed = [ dates, df[ "Wind Speed ( MPH )" ] ]
+jVal = 0
+d = 0
+count = 0
+h = 0
+averageWindSpeeds = [ ]
+highestWindSpeeds = [ ]
+highWind = [ ]
+totalForAverage = 0
+for i in windSpeed[ 0 ]:
+    # if i matches date d to check
+    if i == datesParsed[ d ]:
+        #loop through all temperatures for each date to find highest and add total for avg
+        if windSpeed[ 1 ][ jVal ] > h:
+            h = windSpeed[ 1 ][ jVal ]
+        totalForAverage += windSpeed[ 1 ][ jVal ]
+        count += 1
+    else:
+        #increment date to check
+        d += 1
+        #store highest and average value
+        #print(h)
+        highestWindSpeeds.append( h )
+        totalForAverage = totalForAverage / count
+        averageWindSpeeds.append( totalForAverage )
+        h = 0
+        count = 0
+        totalForAverage = 0
+    jVal += 1
+highestWindSpeeds.append( h )    
+averageWindSpeeds.append( totalForAverage/287 )
+highWind = mergeSort(highestWindSpeeds)
+
+#print(highWind)
+print( "Highest wind speed for current data set = %.2f" % highWind[ len( highWind ) - 1 ] )
+#plt.scatter( datesParsed, averageWindSpeeds, c = "green" )
+plt.plot( datesParsed, averageWindSpeeds, c = "green", alpha = 0.4 )
+#plt.scatter( datesParsed, highestWindSpeeds, c = "orange" )
+plt.plot( datesParsed, highestWindSpeeds, c = "orange", alpha = 0.4 )
+plt.title( "Daily Wind Speeds" )
+plt.ylabel( "MPH" )
+plt.xticks( datesParsed, rotation = 90 )
+plt.legend( [ 'Average Wind Speeds', 'Highest Wind Speeds' ] )
+if( b == True ):
+    plt.savefig('plots/WindSpeeds.png')
+plt.show( )
+
