@@ -27,7 +27,7 @@ col_list = [ "Sensor Name", "Sensor Type", "Timestamp", "Temperature ( F )", "Hu
              "Soil & Liquid Temperature", "Water Detected", "UV Index", "Light Intensity", 
              "Measured Light", "Lightning Strike Count", "Lightning Closest Strike Distance" ]
 df = pd.read_csv( "Data/June2022.csv", usecols = col_list )
-
+print("CURRENT DATA SET: ")
 #%%
 """ 
 author: colbybailey
@@ -96,7 +96,6 @@ plt.plot(df[ "Temperature ( F )" ], 'r-' )
 plt.title( "Temperatures" )
 plt.ylabel( "°F", rotation = 0  )
 plt.xlabel( "# of inputs" )
-plt.legend( [ 'Temperature' ] )
 if( b == True ):
     plt.savefig('plots/temperatureAll.png')
 plt.show( )
@@ -160,15 +159,14 @@ lowest.append( l )
 # merge sort highest temps to find highest and lowest for set of data
 high = mergeSort(highest)
 low = mergeSort(lowest)
-print( "Highest temperature for current data set = %.2f" % high[ len( high ) - 1 ] )
-print( "Lowest temperature for current data set = %.2f" % low[ 0 ] )
+print( "\tHighest temperature = %.2f" % high[ len( high ) - 1 ] )
+print( "\tLowest temperature = %.2f" % low[ 0 ] )
 # plot highest daily temperature data
 plt.scatter( datesParsed, highest, c = "red" ) 
 plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
 plt.title( "Highest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
-plt.legend( [ 'Temperature' ] )
 if( b == True ):
     plt.savefig('plots/highestTemperatures.png')
 plt.show( )
@@ -183,7 +181,6 @@ plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
 plt.title( "Lowest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
-plt.legend( [ 'Temperature' ] )
 if( b == True ):
     plt.savefig('plots/lowestTemperatures.png')
 plt.show( )
@@ -269,9 +266,9 @@ for i in windSpeed[ 0 ]:
 highestWindSpeeds.append( h )    
 averageWindSpeeds.append( totalForAverage/287 )
 highWind = mergeSort(highestWindSpeeds)
-
-#print(highWind)
-print( "Highest wind speed for current data set = %.2f" % highWind[ len( highWind ) - 1 ] )
+print( "\tHighest wind speed = %.2f" % highWind[ len( highWind ) - 1 ] )
+averageSpeed = sum( averageWindSpeeds[ : ] ) / len( averageWindSpeeds ) 
+print( "\tAverage wind speed = %.2f" % averageSpeed )
 plt.scatter( datesParsed, averageWindSpeeds, c = "green" )
 plt.plot( datesParsed, averageWindSpeeds, c = "green", alpha = 0.4, label = "Average Wind Speeds" )
 plt.scatter( datesParsed, highestWindSpeeds, c = "orange" )
@@ -280,7 +277,7 @@ plt.title( "Daily Wind Speeds" )
 plt.ylabel( "MPH" )
 plt.ylim([0,highWind[len( highWind ) - 1 ] + 1] )
 plt.xticks( datesParsed, rotation = 90 )
-plt.legend( )
+plt.legend(shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver")
 if( b == True ):
     plt.savefig('plots/WindSpeeds.png')
 plt.show( )
