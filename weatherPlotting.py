@@ -161,12 +161,24 @@ high = mergeSort(highest)
 low = mergeSort(lowest)
 print( "\tHighest temperature = %.2f" % high[ len( high ) - 1 ] )
 print( "\tLowest temperature = %.2f" % low[ 0 ] )
+
+#find how many dates are in dataset and store in date[]
+date = [ ]
+j = 1
+k = 0
+while k <= d:
+    date.append(j)
+    k += 1
+    j += 1
+#print(date)
+
 # plot highest daily temperature data
 plt.scatter( datesParsed, highest, c = "red" ) 
 plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
 plt.title( "Highest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
+plt.grid(visible=True, axis="both")
 if( b == True ):
     plt.savefig('plots/highestTemperatures.png')
 plt.show( )
@@ -181,6 +193,7 @@ plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
 plt.title( "Lowest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
+plt.grid(visible=True, axis="both")
 if( b == True ):
     plt.savefig('plots/lowestTemperatures.png')
 plt.show( )
@@ -278,7 +291,7 @@ plt.ylabel( "MPH" )
 plt.ylim([0,highWind[len( highWind ) - 1 ] + 1] )
 plt.xticks( datesParsed, rotation = 90 )
 plt.legend(shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver")
+plt.grid(visible=True, axis="both")
 if( b == True ):
     plt.savefig('plots/WindSpeeds.png')
 plt.show( )
-
