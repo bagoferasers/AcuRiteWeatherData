@@ -3,7 +3,7 @@
 """
 Created on Fri Jun 10 05:33:32 2022
 @author: colbybailey
-Import statements.
+None of this looks good please don't scroll down.'
 """
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -93,13 +93,25 @@ def mergeSort( numList ):
 Plot all temperature data on line graph.
 """
 plt.plot(df[ "Temperature ( F )" ], 'r-' )
-plt.title( "Temperatures" )
+plt.title( "All Temperature Data" )
 plt.ylabel( "°F", rotation = 0  )
 plt.xlabel( "# of inputs" )
 if( b == True ):
     plt.savefig('plots/temperatureAll.png')
 plt.show( )
 
+#%%
+"""
+@author: colbybailey
+Plot all feels like data on line graph.
+"""
+plt.plot(df[ "Feels Like ( F )"], c = "orange")
+plt.title( "All Feels Like Data" )
+plt.ylabel( "°F", rotation = 0  )
+plt.xlabel( "# of inputs" )
+if( b == True ):
+    plt.savefig('plots/feelsLikeAll.png')
+plt.show( )
 #%%
 """
 @author = colbybailey
