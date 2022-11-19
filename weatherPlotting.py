@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
-Created on Fri Jun 10 05:33:32 2022
 @author: colbybailey
-None of this looks good please don't scroll down.'
+None of this looks good please don't scroll down.
 """
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 #%%
+
 """
-@author: colbybailey
 Set value of b to True to print out plots as png files under ../../plots
 """
+
 b = False
 
 #%%
+
 """
-@author: colbybailey
 Read data into a dataframe using a list of header column names.
 """
+
 col_list = [ "Sensor Name", "Sensor Type", "Timestamp", "Temperature ( F )", "Humidity ( RH )",
              "Dew Point ( F )",	"Heat Index ( F )",	"Feels Like ( F )",	"Wind Chill ( F )",	
              "Barometric Pressure ( INHG )", "Accumulated Rain ( IN )", "Wind Speed ( MPH )",	
@@ -28,14 +31,16 @@ col_list = [ "Sensor Name", "Sensor Type", "Timestamp", "Temperature ( F )", "Hu
              "Measured Light", "Lightning Strike Count", "Lightning Closest Strike Distance" ]
 df = pd.read_csv( "Data/June2022.csv", usecols = col_list )
 print("CURRENT DATA SET: ")
+
 #%%
+
 """ 
-author: colbybailey
 Merge function to be used by mergeSort function.
 :param sortListA: one of the two non-decreasingly sorted list of numbers.
 :param sortListB: one of the two non-decreasingly sorted list of numbers.
 :returns: the merged list.
 """
+
 def merge (sortListA, sortListB ):
     """Given two non-decreasingly sorted list of numbers, 
        return a single merged list in non-decreasing order
@@ -65,13 +70,15 @@ def merge (sortListA, sortListB ):
         k += 1
         j += 1
     return mergedList
+
 #%%
+
 """
-@author: colbybailey
 mergeSort function that uses merge function.
 :param numList: list of numbers in random order.
 :returns: the list of numbers sorted low to high.
 """
+
 def mergeSort( numList ):
     """
     Given a list of numbers in random order, 
@@ -87,11 +94,13 @@ def mergeSort( numList ):
     right = mergeSort( right )
     sortedList = merge( left, right )
     return sortedList
+
 #%%
+
 """
-@author: colbybailey
 Plot all temperature data on line graph.
 """
+
 plt.plot(df[ "Temperature ( F )" ], 'r-' )
 plt.title( "All Temperature Data" )
 plt.ylabel( "°F", rotation = 0  )
@@ -101,10 +110,11 @@ if( b == True ):
 plt.show( )
 
 #%%
+
 """
-@author: colbybailey
 Plot all feels like data on line graph.
 """
+
 plt.plot(df[ "Feels Like ( F )"], c = "orange")
 plt.title( "All Feels Like Data" )
 plt.ylabel( "°F", rotation = 0  )
@@ -112,13 +122,15 @@ plt.xlabel( "# of inputs" )
 if( b == True ):
     plt.savefig('plots/feelsLikeAll.png')
 plt.show( )
+
 #%%
+
 """
-@author = colbybailey
 Find out how many days need to be checked for temperatures, loop through all dates and find 
 the highest temperatures per day as well as the lowest, plot each highest & lowest temperature on a scatter plot. Merge sort
 highest & lowest temperatures to find the correct ones for current data set.
 """
+
 # declare and initialize variables
 tf = False
 count = 0
@@ -171,8 +183,8 @@ lowest.append( l )
 # merge sort highest temps to find highest and lowest for set of data
 high = mergeSort(highest)
 low = mergeSort(lowest)
-print( "\tHighest temperature = %.2f" % high[ len( high ) - 1 ] )
-print( "\tLowest temperature = %.2f" % low[ 0 ] )
+print( "\t- Highest temperature = %.2f °F" % high[ len( high ) - 1 ] )
+print( "\t- Lowest temperature = %.2f °F" % low[ 0 ] )
 
 #find how many dates are in dataset and store in date[]
 date = [ ]
@@ -182,7 +194,6 @@ while k <= d:
     date.append(j)
     k += 1
     j += 1
-#print(date)
 
 # plot highest daily temperature data
 plt.scatter( datesParsed, highest, c = "red" ) 
@@ -196,10 +207,11 @@ if( b == True ):
 plt.show( )
 
 #%%
-'''
-@author = colbybailey
-Plotting lowest daily temperatures
-'''
+
+"""
+Plotting lowest daily temperatures.
+"""
+
 plt.scatter( datesParsed, lowest, c = "blue" )
 plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
 plt.title( "Lowest Daily Temperatures" )
@@ -209,11 +221,13 @@ plt.grid(visible=True, axis="both")
 if( b == True ):
     plt.savefig('plots/lowestTemperatures.png')
 plt.show( )
+
 #%%
-'''
-@author = colbybailey
-Plotting rain for current data set per day accumulation.
-'''
+
+"""
+Plotting rain accumulation per day for current data.
+"""
+
 '''
 # declare and initialize variables
 rain = df[ "Accumulated Rain ( IN )" ]
@@ -254,11 +268,13 @@ if( b == True ):
     plt.savefig('plots/rainAccumulation.png')
 plt.show( )
 '''
+
 #%%
-'''
-@author = colbybailey
+
+"""
 avg wind speed vs highest wind speeds for days
-'''
+"""
+
 windSpeed = [ dates, df[ "Wind Speed ( MPH )" ] ]
 jVal = 0
 d = 0
@@ -291,9 +307,9 @@ for i in windSpeed[ 0 ]:
 highestWindSpeeds.append( h )    
 averageWindSpeeds.append( totalForAverage/287 )
 highWind = mergeSort(highestWindSpeeds)
-print( "\tHighest wind speed = %.2f" % highWind[ len( highWind ) - 1 ] )
+print( "\t- Highest wind speed = %.2f MPH" % highWind[ len( highWind ) - 1 ] )
 averageSpeed = sum( averageWindSpeeds[ : ] ) / len( averageWindSpeeds ) 
-print( "\tAverage wind speed = %.2f" % averageSpeed )
+print( "\t- Average wind speed = %.2f MPH" % averageSpeed )
 plt.scatter( datesParsed, averageWindSpeeds, c = "green" )
 plt.plot( datesParsed, averageWindSpeeds, c = "green", alpha = 0.4, label = "Average Wind Speeds" )
 plt.scatter( datesParsed, highestWindSpeeds, c = "orange" )
