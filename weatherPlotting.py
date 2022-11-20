@@ -3,7 +3,6 @@
 
 """
 @author: colbybailey
-None of this looks good please don't scroll down.
 """
 
 import pandas as pd
@@ -12,7 +11,7 @@ import matplotlib.pyplot as plt
 #%%
 
 """
-Set value of b to True to print out plots as png files under ../../plots
+OPTIONAL: Set value of b to True to print out plots as png files under ../../plots
 """
 
 b = False
@@ -30,7 +29,9 @@ col_list = [ "Sensor Name", "Sensor Type", "Timestamp", "Temperature ( F )", "Hu
              "Soil & Liquid Temperature", "Water Detected", "UV Index", "Light Intensity", 
              "Measured Light", "Lightning Strike Count", "Lightning Closest Strike Distance" ]
 df = pd.read_csv( "Data/June2022.csv", usecols = col_list )
-print("CURRENT DATA SET: ")
+
+# Header for output
+print( "CURRENT DATA SET: " )
 
 #%%
 
@@ -41,7 +42,7 @@ Merge function to be used by mergeSort function.
 :returns: the merged list.
 """
 
-def merge (sortListA, sortListB ):
+def merge ( sortListA, sortListB ):
     """Given two non-decreasingly sorted list of numbers, 
        return a single merged list in non-decreasing order
     """
@@ -98,31 +99,32 @@ def mergeSort( numList ):
 #%%
 
 """
-Plot all temperature data on line graph.
+Count how many days need to be checked.  Each day has many entries, 
+and requires parsing them to find out how many days there actually are. Dates is unparsed.
 """
-
-plt.plot(df[ "Temperature ( F )" ], 'r-' )
-plt.title( "All Temperature Data" )
-plt.ylabel( "°F", rotation = 0  )
-plt.xlabel( "# of inputs" )
-if( b == True ):
-    plt.savefig('plots/temperatureAll.png')
-plt.show( )
-
-#%%
-
-"""
-Plot all feels like data on line graph.
-"""
-
-plt.plot(df[ "Feels Like ( F )"], c = "orange")
-plt.title( "All Feels Like Data" )
-plt.ylabel( "°F", rotation = 0  )
-plt.xlabel( "# of inputs" )
-if( b == True ):
-    plt.savefig('plots/feelsLikeAll.png')
-plt.show( )
-
+        
+def getAllDates( ):
+    dates = [ ]
+    for i in df[ "Timestamp" ]:
+        dateSplit = i.split( )
+        dates.append( dateSplit[ 0 ] )
+    return dates
+        
+def extractImportantDates( dates ):
+    datesParsed = [ ]
+    alreadyDate = False
+    for i in dates:
+        if datesParsed == [ ]:
+            datesParsed.append( i )
+        else:
+            for j in datesParsed:
+                if i == j:
+                    alreadyDate = True
+            if alreadyDate == False:
+                datesParsed.append( i )
+        alreadyDate = False
+    return datesParsed
+        
 #%%
 
 """
@@ -134,30 +136,19 @@ highest & lowest temperatures to find the correct ones for current data set.
 # declare and initialize variables
 tf = False
 count = 0
-datesParsed = [ ]
 iVal = 0
 jVal = 0
-dates = [ ]
+#dates = [ ]
 highest = [ ]
 lowest = [ ]
 h = 0
 l = 200
 d = 0
-# count number of days and add them to datesParsed[]
-for i in df[ "Timestamp" ]:
-    dateSplit = i.split( )
-    dates.append( dateSplit[ 0 ] )
-    if datesParsed == [ ]:
-        datesParsed.append( dateSplit[ 0 ] )
-        count += 1
-    else:
-        for j in datesParsed:
-            if dateSplit[ 0 ] == j:
-                tf = True
-        if tf == False:
-            datesParsed.append( dateSplit[ 0 ] )
-            count += 1
-    tf = False
+
+
+dates = getAllDates()
+datesParsed = extractImportantDates(dates)
+
 final = [ dates, df[ "Temperature ( F )" ] ]
 #loop all dates and find highest and lowest temperatures
 for i in final[ 0 ]:
@@ -191,9 +182,10 @@ date = [ ]
 j = 1
 k = 0
 while k <= d:
-    date.append(j)
+    date.append( j )
     k += 1
     j += 1
+#print(date)
 
 # plot highest daily temperature data
 plt.scatter( datesParsed, highest, c = "red" ) 
@@ -201,9 +193,9 @@ plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
 plt.title( "Highest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
-plt.grid(visible=True, axis="both")
+plt.grid( visible=True, axis="both" )
 if( b == True ):
-    plt.savefig('plots/highestTemperatures.png')
+    plt.savefig( 'plots/highestTemperatures.png' )
 plt.show( )
 
 #%%
@@ -217,9 +209,9 @@ plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
 plt.title( "Lowest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
-plt.grid(visible=True, axis="both")
+plt.grid( visible=True, axis="both" )
 if( b == True ):
-    plt.savefig('plots/lowestTemperatures.png')
+    plt.savefig( 'plots/lowestTemperatures.png' )
 plt.show( )
 
 #%%
@@ -306,7 +298,7 @@ for i in windSpeed[ 0 ]:
     jVal += 1
 highestWindSpeeds.append( h )    
 averageWindSpeeds.append( totalForAverage/287 )
-highWind = mergeSort(highestWindSpeeds)
+highWind = mergeSort( highestWindSpeeds )
 print( "\t- Highest wind speed = %.2f MPH" % highWind[ len( highWind ) - 1 ] )
 averageSpeed = sum( averageWindSpeeds[ : ] ) / len( averageWindSpeeds ) 
 print( "\t- Average wind speed = %.2f MPH" % averageSpeed )
@@ -316,10 +308,10 @@ plt.scatter( datesParsed, highestWindSpeeds, c = "orange" )
 plt.plot( datesParsed, highestWindSpeeds, c = "orange", alpha = 0.4, label = "Highest Wind Speeds" )
 plt.title( "Daily Wind Speeds" )
 plt.ylabel( "MPH" )
-plt.ylim([0,highWind[len( highWind ) - 1 ] + 1] )
+plt.ylim( [ 0,highWind[ len( highWind ) - 1 ] + 1 ] )
 plt.xticks( datesParsed, rotation = 90 )
-plt.legend(shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver")
-plt.grid(visible=True, axis="both")
+plt.legend( shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver" )
+plt.grid( visible=True, axis="both" )
 if( b == True ):
-    plt.savefig('plots/WindSpeeds.png')
+    plt.savefig( 'plots/WindSpeeds.png') 
 plt.show( )
