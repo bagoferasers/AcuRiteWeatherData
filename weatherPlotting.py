@@ -148,10 +148,12 @@ def maxHeapify( A, i ):
     left = 2 * i
     right = 2 * i + 1
     # if left child is largest, set as largest
-    if left <= len(A) and A[left] > A[largest]:
+    if left < len(A) and A[left] > A[largest]:
         largest = left
     # if right child is largest, set as largest
-    if right <= len(A) and A[right] > A[largest]:
+    #print( "right = ", right )
+    #print( "len(A) = ", len(A))
+    if right < len(A) and A[right] > A[largest]:
         largest = right
     # if largest isn't i, exchange root with i and maxHeapify
     if largest != i:
@@ -178,9 +180,8 @@ heapsort function
 def heapsort( A, n ):
     buildMaxHeap( A, n ) 
     for i in range( n, 2 ):
-        temp = A[ 1 ]
-        A[ 1 ] = A[ i ]
-        A[ i ] = temp
+        #print(i)
+        ( A[ 1 ], A[ i ] ) = ( A[ i ], A[ 1 ] )
         n = n - 1
         maxHeapify(A, i)
 
@@ -191,105 +192,84 @@ maxHeapMaximum function
 :returns: the max heap's root
 """
 def maxHeapMaximum( A ):
-    if A.size < 1:
+    if len(A) < 1:
         raise ValueError( "A.size is less than 1" )
     return A[ 0 ]
 
-#%% 
-"""
-Testing heapsort
-"""
-t = np.array( df[ "Temperature ( F )" ] )
-heapsort(t, t.size)
-print(maxHeapMaximum(t))
-
 #%%
-
 """
-Loop through all dates and find 
-the highest temperatures per day as well as the lowest, plot each highest & lowest temperature on a scatter plot. Merge sort
-highest & lowest temperatures to find the correct ones for current data set.
+maxHeapMinimum function
+:param A: list of doubles
+:returns: the max heap's root
 """
+def maxHeapMinimum( A ):
+    if len(A) < 1:
+        raise ValueError( "A.size is less than 1" )
+    return A[ len(A) - 1 ]
 
-# declare and initialize variables
-tf = False
-count = 0
-iVal = 0
-jVal = 0
-highest = [ ]
-lowest = [ ]
-h = 0
-l = 200
-d = 0
+#%% 
 
 # find out the dates for the dataset and store in datesParsed
 dates = getAllDates()
 datesParsed = extractImportantDates(dates)
 
-final = [ dates, df[ "Temperature ( F )" ] ]
+#%%
+"""
+find highest value per day
+"""
+def extractMaxPerDay( dataFrame ):
+    finalHighTemps = [ ]
+    final = [ dates, dataFrame ]
+    j = 0
+    for i in datesParsed:
+        tempsForDay = [ ]
+        # while date is the same
+        while j < len(dates) and i == dates[ j ]:
+            # extract temperatures for day and put into array
+            tempsForDay.append(final[1][j])
+            j+=1
+        heapsort(tempsForDay, len(tempsForDay))
+        finalHighTemps.append(maxHeapMaximum(tempsForDay))
+    return finalHighTemps
 
-#loop all dates and find highest and lowest temperatures
-for i in final[ 0 ]:
-    # if i matches date d to check
-    if i == datesParsed[ d ]:
-        #loop through all temperatures for each date to find highest and lowest
-        if final[ 1 ][ jVal ] > h:
-            h = final[ 1 ][ jVal ]
-        if final[ 1 ][ jVal ] < l:
-            l = final[ 1 ][ jVal ]
-    else:
-        #increment date to check
-        d += 1
-        #store highest and lowest value
-        highest.append( h )
-        lowest.append( l )
-        h = 0
-        l = 200
-    jVal += 1
-# append last value
-highest.append( h )
-lowest.append( l )
-# merge sort highest temps to find highest and lowest for set of data
-high = mergeSort(highest)
-low = mergeSort(lowest)
-print( "\t- Highest temperature = %.2f °F" % high[ len( high ) - 1 ] )
-print( "\t- Lowest temperature = %.2f °F" % low[ 0 ] )
-
-#find how many dates are in dataset and store in date[]
-date = [ ]
-j = 1
-k = 0
-while k <= d:
-    date.append( j )
-    k += 1
-    j += 1
-#print(date)
-
-# plot highest daily temperature data
-plt.scatter( datesParsed, highest, c = "red" ) 
-plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
-plt.title( "Highest Daily Temperatures" )
-plt.ylabel( "°F", rotation = 0 )
-plt.xticks( datesParsed, rotation = 90 )
-plt.grid( visible=True, axis="both" )
-if( b == True ):
-    plt.savefig( 'plots/highestTemperatures.png' )
-plt.show( )
+#%%
+"""
+find lowest value per day
+"""
+def extractMinPerDay( dataFrame ):
+    finalLowTemps = [ ]
+    final = [ dates, dataFrame ]
+    j = 0
+    for i in datesParsed:
+        tempsForDay = [ ]
+        # while date is the same
+        while j < len(dates) and i == dates[ j ]:
+            # extract temperatures for day and put into array
+            tempsForDay.append(final[1][j])
+            j+=1
+        heapsort(tempsForDay, len(tempsForDay))
+        finalLowTemps.append(maxHeapMinimum(tempsForDay))
+    return finalLowTemps
 
 #%%
 
 """
-Plotting lowest daily temperatures.
+Find the highest and lowest temperatures per day, plot each on a scatter plot.
 """
-
+highest = extractMaxPerDay( df[ "Temperature ( F )" ] )
+lowest = extractMinPerDay( df [ "Temperature ( F )" ] )
+# plot highest daily temperature data
+plt.scatter( datesParsed, highest, c = "red" ) 
+plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
 plt.scatter( datesParsed, lowest, c = "blue" )
 plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
-plt.title( "Lowest Daily Temperatures" )
+plt.title( "Highest and Lowest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
+plt.ylim(min(lowest)-1, max(highest)+1)
 plt.grid( visible=True, axis="both" )
 if( b == True ):
-    plt.savefig( 'plots/lowestTemperatures.png' )
+    plt.savefig( 'plots/highestTemperatures.png' )
 plt.show( )
 
 #%%
