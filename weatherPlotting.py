@@ -7,8 +7,6 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
-import math
-import numpy as np
 
 #%%
 
@@ -102,9 +100,10 @@ def mergeSort( numList ):
 
 """
 getAllDates function uses the "Timestamp" header from the dataframe,
-extracts just the date, and returns them all. This includes duplicate dates.
+extracts just the date, and returns them all. This includes all duplicate dates
+on purpose.
 """
-        
+
 def getAllDates( ):
     dates = [ ]
     for i in df[ "Timestamp" ]:
@@ -119,8 +118,9 @@ extractImportantDates function takes in the argument dates (returned from getAll
 and removes the redundancy of multiple dates.  It stores them in datesParsed[] and 
 returns the completed set.
 :param dates: all of the dates from the df[ "Timestamp" ] header.
-:returns: dates without redundancy.
+:returns: datesParsed wich is the dates without the redundancy.
 """
+
 def extractImportantDates( dates ):
     datesParsed = [ ]
     alreadyDate = False
@@ -138,127 +138,142 @@ def extractImportantDates( dates ):
 
 #%%
 """
-maxHeapify function 
-:param A: list of doubles 
-:param i: subtree rooted at i
-:param n: size of heap
+maxHeapify function is used to maintain the max-heap property.
+After maxHeapify, subtree rooted at i is a max-heap.
+:param A: list of doubles.
+:param i: subtree rooted at i.
 """
+
 def maxHeapify( A, i ):
     largest = i
     left = 2 * i
     right = 2 * i + 1
     # if left child is largest, set as largest
-    if left < len(A) and A[left] > A[largest]:
+    if left < len( A ) and A[ left ] > A[ largest ]:
         largest = left
     # if right child is largest, set as largest
-    #print( "right = ", right )
-    #print( "len(A) = ", len(A))
-    if right < len(A) and A[right] > A[largest]:
+    if right < len( A ) and A[ right ] > A[ largest ]:
         largest = right
     # if largest isn't i, exchange root with i and maxHeapify
     if largest != i:
-        (A[i], A[largest]) = (A[largest], A[i])
-        maxHeapify(A, largest)
+        ( A[ i ], A[ largest ] ) = ( A[ largest ], A[ i ] )
+        maxHeapify( A, largest )
 
 #%%
 """
-buildMaxHeap function
-:param A: list of doubles
-:param n: size of heap
+buildMaxHeap function takes an unordered array and produces
+a max-heap of n elements in A.
+:param A: list of doubles.
+:param n: size of heap.
 """
+
 def buildMaxHeap( A, n ):
-    n = len(A)
-    for i in range(n // 2 - 1, -1, -1):
-        maxHeapify(A, i)
+    n = len( A )
+    for i in range( n // 2 - 1, -1, -1 ):
+        maxHeapify( A, i )
         
 #%%
 """
-heapsort function
-:param A: list of doubles
-:param n: size of heap
+heapsort function builds a max-heap from the array. It then
+starts with the root and places the maximum element in the correct
+place by swapping with last element in array. Then it discards the
+last node (being in the correct place) and calls upon maxHeapify()
+on the new root. Repeats process until only one node is left.
+:param A: list of doubles.
+:param n: size of heap.
 """
+
 def heapsort( A, n ):
     buildMaxHeap( A, n ) 
     for i in range( n, 2 ):
-        #print(i)
         ( A[ 1 ], A[ i ] ) = ( A[ i ], A[ 1 ] )
         n = n - 1
-        maxHeapify(A, i)
+        maxHeapify( A, i )
 
 #%%
 """
-maxHeapMaximum function
-:param A: list of doubles
-:returns: the max heap's root
+maxHeapMaximum function returns the rmax value.
+:param A: list of doubles.
+:returns: the max heap's root.
 """
+
 def maxHeapMaximum( A ):
-    if len(A) < 1:
+    if len( A ) < 1:
         raise ValueError( "A.size is less than 1" )
     return A[ 0 ]
 
 #%%
 """
-maxHeapMinimum function
-:param A: list of doubles
-:returns: the max heap's root
+maxHeapMinimum function returns the minimum value.
+:param A: list of doubles.
+:returns: the last element in Array.
 """
+
 def maxHeapMinimum( A ):
-    if len(A) < 1:
+    if len( A ) < 1:
         raise ValueError( "A.size is less than 1" )
-    return A[ len(A) - 1 ]
+    return A[ len( A ) - 1 ]
 
 #%% 
 
 # find out the dates for the dataset and store in datesParsed
-dates = getAllDates()
-datesParsed = extractImportantDates(dates)
+dates = getAllDates( )
+datesParsed = extractImportantDates( dates )
 
 #%%
 """
-find highest value per day
+extractMaxPerDay function returns the maximum values per day 
+within the dataframe column.
+:param dataFrame: dataFrame column to be used.
+:returns: the high values per day.
 """
+
 def extractMaxPerDay( dataFrame ):
-    finalHighTemps = [ ]
+    high = [ ]
     final = [ dates, dataFrame ]
     j = 0
     for i in datesParsed:
-        tempsForDay = [ ]
+        perDay = [ ]
         # while date is the same
-        while j < len(dates) and i == dates[ j ]:
-            # extract temperatures for day and put into array
-            tempsForDay.append(final[1][j])
-            j+=1
-        heapsort(tempsForDay, len(tempsForDay))
-        finalHighTemps.append(maxHeapMaximum(tempsForDay))
-    return finalHighTemps
+        while j < len( dates ) and i == dates[ j ]:
+            # extract each for day and put into array
+            perDay.append( final[ 1 ][ j ] )
+            j += 1
+        heapsort( perDay, len( perDay ) )
+        high.append( maxHeapMaximum( perDay ) )
+    return high
 
 #%%
 """
-find lowest value per day
+extractMinPerDay function returns the minimum values per day
+within the dataframe column.
+:param dataFrame: dataFrame column to be used.
+:returns: the low values per day.
 """
+
 def extractMinPerDay( dataFrame ):
-    finalLowTemps = [ ]
+    low = [ ]
     final = [ dates, dataFrame ]
     j = 0
     for i in datesParsed:
-        tempsForDay = [ ]
+        perDay = [ ]
         # while date is the same
-        while j < len(dates) and i == dates[ j ]:
-            # extract temperatures for day and put into array
-            tempsForDay.append(final[1][j])
+        while j < len( dates ) and i == dates[ j ]:
+            # extract each for day and put into array
+            perDay.append( final[ 1 ][ j ] )
             j+=1
-        heapsort(tempsForDay, len(tempsForDay))
-        finalLowTemps.append(maxHeapMinimum(tempsForDay))
-    return finalLowTemps
+        heapsort( perDay, len( perDay ) )
+        low.append( maxHeapMinimum( perDay ) )
+    return low
 
 #%%
 
 """
 Find the highest and lowest temperatures per day, plot each on a scatter plot.
 """
+
 highest = extractMaxPerDay( df[ "Temperature ( F )" ] )
 lowest = extractMinPerDay( df [ "Temperature ( F )" ] )
-# plot highest daily temperature data
 plt.scatter( datesParsed, highest, c = "red" ) 
 plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
 plt.scatter( datesParsed, lowest, c = "blue" )
@@ -266,7 +281,7 @@ plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
 plt.title( "Highest and Lowest Daily Temperatures" )
 plt.ylabel( "°F", rotation = 0 )
 plt.xticks( datesParsed, rotation = 90 )
-plt.ylim(min(lowest)-1, max(highest)+1)
+plt.ylim( min( lowest ) - 1, max( highest ) + 1 )
 plt.grid( visible=True, axis="both" )
 if( b == True ):
     plt.savefig( 'plots/highestTemperatures.png' )
