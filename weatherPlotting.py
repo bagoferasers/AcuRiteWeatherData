@@ -11,10 +11,17 @@ import matplotlib.pyplot as plt
 #%%
 
 """
-OPTIONAL: Set value of b to True to print out plots as png files under ../../plots
+OPTIONAL: 
+    - Set PRINTPLOTS to True to print out plots as png files under ../../plots
+    - SET PLOTTEMPERATURE to True to plot high and low temperatures
+    - Set PLOTRAINACCUMULATION to True to plot the rain accumulation per day
+    - Set PLOTWIND to True to plot high and average wind speeds
 """
 
-b = False
+PRINTPLOTS = False
+PLOTTEMPERATURE = False
+PLOTRAINACCUMULATION = False
+PLOTWIND = False
 
 #%%
 
@@ -29,9 +36,6 @@ col_list = [ "Sensor Name", "Sensor Type", "Timestamp", "Temperature ( F )", "Hu
              "Soil & Liquid Temperature", "Water Detected", "UV Index", "Light Intensity", 
              "Measured Light", "Lightning Strike Count", "Lightning Closest Strike Distance" ]
 df = pd.read_csv( "Data/June2022.csv", usecols = col_list )
-
-# Header for output
-print( "CURRENT DATA SET: " )
 
 #%%
 
@@ -292,85 +296,54 @@ def extractAveragePerDay( dataFrame ):
 """
 Find the highest and lowest temperatures per day, plot each on a scatter plot.
 """
-
-highest = extractMaxPerDay( df[ "Temperature ( F )" ] )
-lowest = extractMinPerDay( df [ "Temperature ( F )" ] )
-plt.scatter( datesParsed, highest, c = "red" ) 
-plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
-plt.scatter( datesParsed, lowest, c = "blue" )
-plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
-plt.title( "Highest and Lowest Daily Temperatures" )
-plt.ylabel( "°F", rotation = 0 )
-plt.xticks( datesParsed, rotation = 90 )
-plt.ylim( min( lowest ) - 1, max( highest ) + 1 )
-plt.grid( visible=True, axis="both" )
-if( b == True ):
-    plt.savefig( 'plots/highestTemperatures.png' )
-plt.show( )
+if PLOTTEMPERATURE == True:
+    highest = extractMaxPerDay( df[ "Temperature ( F )" ] )
+    lowest = extractMinPerDay( df [ "Temperature ( F )" ] )
+    plt.scatter( datesParsed, highest, c = "red" ) 
+    plt.plot( datesParsed, highest, c = "red", alpha = 0.4 )
+    plt.scatter( datesParsed, lowest, c = "blue" )
+    plt.plot( datesParsed, lowest, c = "blue", alpha = 0.4 )
+    plt.title( "Highest and Lowest Daily Temperatures" )
+    plt.ylabel( "°F", rotation = 0 )
+    plt.xticks( datesParsed, rotation = 90 )
+    plt.ylim( min( lowest ) - 1, max( highest ) + 1 )
+    plt.grid( visible=True, axis="both" )
+    if( PRINTPLOTS == True ):
+        plt.savefig( 'plots/highestTemperatures.png' )
+    plt.show( )
 
 #%%
 
 """
 Plotting rain accumulation per day for current data.
 """
-
-'''
-# declare and initialize variables
-rain = df[ "Accumulated Rain ( IN )" ]
-rainCurrent = 0
-iVal = 0
-rainParsed = [ ]
-d = 0
-finalRain = [ dates, "Accumulated Rain ( IN )" ]
-# loop through date stamps and add up rain per day and add to rainParsed[ ]
-for i in finalRain[ 0 ]:
-    if i == datesParsed[ d ]:
-        if iVal > 1:
-            if df[ "Accumulated Rain ( IN )"][ iVal -1 ] != df[ "Accumulated Rain ( IN )" ][ iVal ]:
-                rainCurrent += df[ "Accumulated Rain ( IN )" ][ iVal ]
-    else:
-        rainParsed.append( rainCurrent )
-        d += 1
-        rainCurrent = 0
-    iVal += 1
-# append last value
-rainParsed.append( rainCurrent )
-# loop through rainParsed and normalize any extremes to 10 inches
-rainNormalized = [ ]
-totalRain = 0
-for i in rainParsed:
-    if i > 10:
-        i = 10
-    totalRain += i
-    rainNormalized.append( i )
-print( "Total Rain Accumulation for current data set = %.2f" % totalRain )
-# plot rain accumulation per day
-plt.bar( datesParsed, rainNormalized )
-plt.xticks( datesParsed, rotation = 90 )
-plt.title( "Rain Accumulation ( Normalized values at 10 )" )
-plt.ylabel( "Inches" )
-plt.legend( [ 'Rain' ] )
-if( b == True ):
-    plt.savefig('plots/rainAccumulation.png')
-plt.show( )
-'''
+if PLOTRAINACCUMULATION == True:
+    rain = extractMaxPerDay( df[ "Accumulated Rain ( IN )" ] )
+    plt.bar( datesParsed, rain )
+    plt.xticks( datesParsed, rotation = 90 )
+    plt.title( "Rain Accumulation" )
+    plt.ylabel( "Inches" )
+    plt.legend( [ 'Rain' ] )
+    if( PRINTPLOTS == True ):
+        plt.savefig('plots/rainAccumulation.png')
+    plt.show( )
 
 #%%
 """
 Average wind speed vs highest wind speed per day.
 """
-
-highest = extractMaxPerDay( df[ "Wind Speed ( MPH )" ] )
-average = extractAveragePerDay( df[ "Wind Speed ( MPH )" ] )
-plt.scatter( datesParsed, average, c = "green" )
-plt.plot( datesParsed, average, c = "green", alpha = 0.4, label = "Average Wind Speeds" )
-plt.scatter( datesParsed, highest, c = "orange" )
-plt.plot( datesParsed, highest, c = "orange", alpha = 0.4, label = "Highest Wind Speeds" )
-plt.title( "Daily Wind Speeds" )
-plt.ylabel( "MPH" )
-plt.xticks( datesParsed, rotation = 90 )
-plt.legend( shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver" )
-plt.grid( visible=True, axis="both" )
-if( b == True ):
-    plt.savefig( 'plots/WindSpeeds.png') 
-plt.show( )
+if PLOTWIND == True:
+    highest = extractMaxPerDay( df[ "Wind Speed ( MPH )" ] )
+    average = extractAveragePerDay( df[ "Wind Speed ( MPH )" ] )
+    plt.scatter( datesParsed, average, c = "green" )
+    plt.plot( datesParsed, average, c = "green", alpha = 0.4, label = "Average Wind Speeds" )
+    plt.scatter( datesParsed, highest, c = "orange" )
+    plt.plot( datesParsed, highest, c = "orange", alpha = 0.4, label = "Highest Wind Speeds" )
+    plt.title( "Daily Wind Speeds" )
+    plt.ylabel( "MPH" )
+    plt.xticks( datesParsed, rotation = 90 )
+    plt.legend( shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver" )
+    plt.grid( visible=True, axis="both" )
+    if( PRINTPLOTS == True ):
+        plt.savefig( 'plots/WindSpeeds.png') 
+    plt.show( )
