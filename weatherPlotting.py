@@ -265,6 +265,27 @@ def extractMinPerDay( dataFrame ):
         heapsort( perDay, len( perDay ) )
         low.append( maxHeapMinimum( perDay ) )
     return low
+#%%
+"""
+extractAveragePerDay function returns the average values per day
+within the dataframe column.
+:param dataFrame: dataFrame column to be used.
+:returns: the average values per day.
+"""
+
+def extractAveragePerDay( dataFrame ):
+    average = [ ]
+    final = [ dates, dataFrame ]
+    j = 0
+    for i in datesParsed:
+        perDay = [ ]
+        # while date is the same
+        while j < len( dates ) and i == dates[ j ]:
+            # extract each for day and put into array
+            perDay.append( final[ 1 ][ j ] )
+            j+=1
+        average.append( sum( perDay ) / len( perDay ) )
+    return average
 
 #%%
 
@@ -335,53 +356,18 @@ plt.show( )
 '''
 
 #%%
-
 """
-avg wind speed vs highest wind speeds for days
+Average wind speed vs highest wind speed per day.
 """
 
-windSpeed = [ dates, df[ "Wind Speed ( MPH )" ] ]
-jVal = 0
-d = 0
-count = 0
-h = 0
-averageWindSpeeds = [ ]
-highestWindSpeeds = [ ]
-highWind = [ ]
-totalForAverage = 0
-for i in windSpeed[ 0 ]:
-    # if i matches date d to check
-    if i == datesParsed[ d ]:
-        #loop through all temperatures for each date to find highest and add total for avg
-        if windSpeed[ 1 ][ jVal ] > h:
-            h = windSpeed[ 1 ][ jVal ]
-        totalForAverage += windSpeed[ 1 ][ jVal ]
-        count += 1
-    else:
-        #increment date to check
-        d += 1
-        #store highest and average value
-        #print(h)
-        highestWindSpeeds.append( h )
-        totalForAverage = totalForAverage / count
-        averageWindSpeeds.append( totalForAverage )
-        h = 0
-        count = 0
-        totalForAverage = 0
-    jVal += 1
-highestWindSpeeds.append( h )    
-averageWindSpeeds.append( totalForAverage/287 )
-highWind = mergeSort( highestWindSpeeds )
-print( "\t- Highest wind speed = %.2f MPH" % highWind[ len( highWind ) - 1 ] )
-averageSpeed = sum( averageWindSpeeds[ : ] ) / len( averageWindSpeeds ) 
-print( "\t- Average wind speed = %.2f MPH" % averageSpeed )
-plt.scatter( datesParsed, averageWindSpeeds, c = "green" )
-plt.plot( datesParsed, averageWindSpeeds, c = "green", alpha = 0.4, label = "Average Wind Speeds" )
-plt.scatter( datesParsed, highestWindSpeeds, c = "orange" )
-plt.plot( datesParsed, highestWindSpeeds, c = "orange", alpha = 0.4, label = "Highest Wind Speeds" )
+highest = extractMaxPerDay( df[ "Wind Speed ( MPH )" ] )
+average = extractAveragePerDay( df[ "Wind Speed ( MPH )" ] )
+plt.scatter( datesParsed, average, c = "green" )
+plt.plot( datesParsed, average, c = "green", alpha = 0.4, label = "Average Wind Speeds" )
+plt.scatter( datesParsed, highest, c = "orange" )
+plt.plot( datesParsed, highest, c = "orange", alpha = 0.4, label = "Highest Wind Speeds" )
 plt.title( "Daily Wind Speeds" )
 plt.ylabel( "MPH" )
-plt.ylim( [ 0,highWind[ len( highWind ) - 1 ] + 1 ] )
 plt.xticks( datesParsed, rotation = 90 )
 plt.legend( shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver" )
 plt.grid( visible=True, axis="both" )
