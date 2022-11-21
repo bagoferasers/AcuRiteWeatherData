@@ -7,6 +7,8 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import math
+import numpy as np
 
 #%%
 
@@ -99,8 +101,8 @@ def mergeSort( numList ):
 #%%
 
 """
-Count how many days need to be checked.  Each day has many entries, 
-and requires parsing them to find out how many days there actually are. Dates is unparsed.
+getAllDates function uses the "Timestamp" header from the dataframe,
+extracts just the date, and returns them all. This includes duplicate dates.
 """
         
 def getAllDates( ):
@@ -110,6 +112,15 @@ def getAllDates( ):
         dates.append( dateSplit[ 0 ] )
     return dates
         
+#%%
+
+"""
+extractImportantDates function takes in the argument dates (returned from getAllDates())
+and removes the redundancy of multiple dates.  It stores them in datesParsed[] and 
+returns the completed set.
+:param dates: all of the dates from the df[ "Timestamp" ] header.
+:returns: dates without redundancy.
+"""
 def extractImportantDates( dates ):
     datesParsed = [ ]
     alreadyDate = False
@@ -124,11 +135,78 @@ def extractImportantDates( dates ):
                 datesParsed.append( i )
         alreadyDate = False
     return datesParsed
+
+#%%
+"""
+maxHeapify function 
+:param A: list of doubles 
+:param i: subtree rooted at i
+:param n: size of heap
+"""
+def maxHeapify( A, i ):
+    largest = i
+    left = 2 * i
+    right = 2 * i + 1
+    # if left child is largest, set as largest
+    if left <= len(A) and A[left] > A[largest]:
+        largest = left
+    # if right child is largest, set as largest
+    if right <= len(A) and A[right] > A[largest]:
+        largest = right
+    # if largest isn't i, exchange root with i and maxHeapify
+    if largest != i:
+        (A[i], A[largest]) = (A[largest], A[i])
+        maxHeapify(A, largest)
+
+#%%
+"""
+buildMaxHeap function
+:param A: list of doubles
+:param n: size of heap
+"""
+def buildMaxHeap( A, n ):
+    n = len(A)
+    for i in range(n // 2 - 1, -1, -1):
+        maxHeapify(A, i)
         
+#%%
+"""
+heapsort function
+:param A: list of doubles
+:param n: size of heap
+"""
+def heapsort( A, n ):
+    buildMaxHeap( A, n ) 
+    for i in range( n, 2 ):
+        temp = A[ 1 ]
+        A[ 1 ] = A[ i ]
+        A[ i ] = temp
+        n = n - 1
+        maxHeapify(A, i)
+
+#%%
+"""
+maxHeapMaximum function
+:param A: list of doubles
+:returns: the max heap's root
+"""
+def maxHeapMaximum( A ):
+    if A.size < 1:
+        raise ValueError( "A.size is less than 1" )
+    return A[ 0 ]
+
+#%% 
+"""
+Testing heapsort
+"""
+t = np.array( df[ "Temperature ( F )" ] )
+heapsort(t, t.size)
+print(maxHeapMaximum(t))
+
 #%%
 
 """
-Find out how many days need to be checked for temperatures, loop through all dates and find 
+Loop through all dates and find 
 the highest temperatures per day as well as the lowest, plot each highest & lowest temperature on a scatter plot. Merge sort
 highest & lowest temperatures to find the correct ones for current data set.
 """
@@ -138,18 +216,18 @@ tf = False
 count = 0
 iVal = 0
 jVal = 0
-#dates = [ ]
 highest = [ ]
 lowest = [ ]
 h = 0
 l = 200
 d = 0
 
-
+# find out the dates for the dataset and store in datesParsed
 dates = getAllDates()
 datesParsed = extractImportantDates(dates)
 
 final = [ dates, df[ "Temperature ( F )" ] ]
+
 #loop all dates and find highest and lowest temperatures
 for i in final[ 0 ]:
     # if i matches date d to check
