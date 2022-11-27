@@ -19,9 +19,9 @@ OPTIONAL:
 """
 
 PRINTPLOTS = False
-PLOTTEMPERATURE = False
-PLOTRAINACCUMULATION = False
-PLOTWIND = False
+PLOTTEMPERATURE = True
+PLOTRAINACCUMULATION = True
+PLOTWIND = True
 
 #%%
 
@@ -323,7 +323,6 @@ if PLOTRAINACCUMULATION == True:
     plt.xticks( datesParsed, rotation = 90 )
     plt.title( "Rain Accumulation" )
     plt.ylabel( "Inches" )
-    plt.legend( [ 'Rain' ] )
     if( PRINTPLOTS == True ):
         plt.savefig('plots/rainAccumulation.png')
     plt.show( )
@@ -342,6 +341,7 @@ if PLOTWIND == True:
     plt.title( "Daily Wind Speeds" )
     plt.ylabel( "MPH" )
     plt.xticks( datesParsed, rotation = 90 )
+    plt.ylim( min(average) - 2, max(highest) + 2 )
     plt.legend( shadow=True, framealpha=1, edgecolor="green", fontsize="x-small", facecolor="silver" )
     plt.grid( visible=True, axis="both" )
     if( PRINTPLOTS == True ):
